@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PaeeConverter — Roblox Asset Tools</title>
+<link rel="icon" type="image/png" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   RESET & VARIABLES (Tema PaeeConverter Purple)
+   ═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep: #030005;
+  --bg-main: #0a0512;
+  --bg-glass: rgba(20, 10, 35, 0.6);
+  --bg-glass-hover: rgba(35, 15, 60, 0.8);
+  --border-glass: rgba(168, 85, 247, 0.15);
+  --border-glass-hover: rgba(168, 85, 247, 0.4);
+  --text-main: #f8f4ff;
+  --text-muted: #a78bfa;
+  --text-dim: #6b5a8c;
+  --accent-primary: #a855f7; /* Purple Neon */
+  --accent-secondary: #d946ef; /* Pink Neon */
+  --accent-success: #10b981; /* Emerald */
+  --accent-danger: #f43f5e; /* Rose */
+  --accent-warning: #f59e0b; /* Amber */
+  --accent-gold: #fbbf24;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --sidebar-w: 260px;
+  --hdr-h: 72px;
+  --font-main: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --blur: blur(16px);
+}
+html,body{height:100%;background:var(--bg-deep);color:var(--text-main);font-family:var(--font-main);font-size:14px;line-height:1.6;overflow:hidden;background-image:radial-gradient(circle at 15% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(217, 70, 239, 0.1) 0%, transparent 40%);}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;background:var(--bg-glass);border:1px solid var(--border-glass);border-radius:var(--radius-sm);padding:10px 14px;width:100%;outline:none;transition:all 0.2s ease}
+input:focus,select:focus,textarea:focus{border-color:var(--accent-primary);box-shadow:0 0 0 3px rgba(168, 85, 247, 0.2);background:var(--bg-glass-hover)}
+input::placeholder,textarea::placeholder{color:var(--text-dim)}
+select option{background:var(--bg-main);color:var(--text-main)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(168, 85, 247, 0.3);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:rgba(168, 85, 247, 0.5)}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ─── SIDEBAR ─── */
+#sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--bg-glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--border-glass);
+  display:flex;flex-direction:column;
+  transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index:50;
+}
+.sidebar-logo{padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border-glass);flex-shrink:0}
+/* Logo Image Styling */
+.logo-img{width:42px;height:42px;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 0 15px rgba(168, 85, 247, 0.5);border:1px solid rgba(168, 85, 247, 0.3)}
+.logo-text{font-size:16px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(to right, #fff, #d8b4fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:10px;color:var(--text-muted);font-family:var(--font-mono);letter-spacing:0.5px;margin-top:2px}
+.sidebar-section{padding:20px 20px 8px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.nav-btn{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;margin:2px 12px;
+  border-radius:var(--radius-sm);font-size:14px;font-weight:600;
+  color:var(--text-muted);transition:all 0.2s ease;cursor:pointer;
+  position:relative;
+}
+.nav-btn:hover{color:var(--text-main);background:var(--bg-glass-hover)}
+.nav-btn.active{color:#fff;background:linear-gradient(90deg, rgba(168, 85, 247, 0.2), transparent);border-left:3px solid var(--accent-primary)}
+.nav-btn .nav-ico{width:18px;height:18px;opacity:0.7;transition:opacity 0.2s}
+.nav-btn:hover .nav-ico,.nav-btn.active .nav-ico{opacity:1}
+.nav-lock{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(217, 70, 239, 0.2);color:#f0abfc;font-weight:700}
+.nav-badge{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(16, 185, 129, 0.2);color:#6ee7b7;font-weight:700}
+.sidebar-footer{margin-top:auto;padding:20px;border-top:1px solid var(--border-glass)}
+.user-chip{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--radius-md);background:var(--bg-glass);cursor:pointer;transition:background 0.2s;border:1px solid var(--border-glass)}
+.user-chip:hover{background:var(--bg-glass-hover)}
+.user-av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--bg-main)}
+.user-av-ph{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent-secondary),var(--accent-primary));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.user-name{font-size:13px;font-weight:700;line-height:1.3}
+.user-plan{font-size:11px;font-family:var(--font-mono);font-weight:600}
+.user-plan.free{color:var(--text-muted)}
+.user-plan.vip{color:var(--accent-gold)}
+
+/* ─── MAIN ─── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#header{
+  height:var(--hdr-h);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+  border-bottom:1px solid var(--border-glass);
+  background:transparent;
+}
+.hdr-title{font-size:20px;font-weight:800;letter-spacing:-0.5px}
+.hdr-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.hdr-actions{display:flex;align-items:center;gap:12px}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;
+  transition:all 0.2s ease;cursor:pointer;border:none;
+}
+.btn-ghost{background:transparent;border:1px solid var(--border-glass);color:var(--text-muted)}
+.btn-ghost:hover{border-color:var(--border-glass-hover);background:var(--bg-glass-hover);color:var(--text-main)}
+.btn-primary{background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#fff;box-shadow:0 4px 16px rgba(168, 85, 247, 0.4)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-success{background:var(--accent-success);color:#fff}
+.btn-success:hover{filter:brightness(1.1)}
+.btn-danger{background:var(--accent-danger);color:#fff}
+.btn-danger:hover{filter:brightness(1.1)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important;filter:none!important}
+
+/* ─── CONTENT AREA ─── */
+#content{flex:1;overflow-y:auto;padding:32px;scroll-behavior:smooth}
+.panel{display:none;animation:fadeIn 0.3s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── CARDS & GLASSMORPHISM ─── */
+.card{
+  background:var(--bg-glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--border-glass);border-radius:var(--radius-lg);
+  padding:24px;box-shadow:var(--shadow-glass);
+  transition:border-color 0.2s;
+}
+.card:hover{border-color:var(--border-glass-hover)}
+.card-title{font-size:16px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card-desc{font-size:13px;color:var(--text-muted);margin-bottom:20px}
+
+/* ─── GRID ─── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+
+/* ─── STAT CARDS ─── */
+.stat-card{
+  background:var(--bg-glass);backdrop-filter:var(--blur);
+  border:1px solid var(--border-glass);border-radius:var(--radius-lg);
+  padding:20px;display:flex;align-items:center;gap:16px;
+  transition:transform 0.2s;
+}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-ico{width:48px;height:48px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:rgba(168, 85, 247, 0.1)}
+.stat-val{font-size:28px;font-weight:800;line-height:1;letter-spacing:-1px}
+.stat-lbl{font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:600}
+
+/* ─── TOOL CARDS ─── */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.tool-card{
+  background:var(--bg-glass);border:1px solid var(--border-glass);
+  border-radius:var(--radius-lg);padding:24px;cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+}
+.tool-card:hover{border-color:var(--accent-primary);transform:translateY(-4px);box-shadow:0 12px 24px rgba(168, 85, 247, 0.2);background:var(--bg-glass-hover)}
+.tool-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, rgba(168, 85, 247, 0.15), transparent 70%);opacity:0;transition:opacity 0.3s}
+.tool-card:hover::before{opacity:1}
+.tool-card-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(168, 85, 247, 0.1);position:relative;z-index:1}
+.tool-card-name{font-size:15px;font-weight:800;position:relative;z-index:1}
+.tool-card-desc{font-size:12px;color:var(--text-muted);line-height:1.5;position:relative;z-index:1}
+.tool-card-badge{position:absolute;top:16px;right:16px;font-size:10px;padding:4px 8px;border-radius:20px;font-family:var(--font-mono);font-weight:700;z-index:2}
+
+/* ─── FORM ─── */
+.form-group{margin-bottom:20px}
+.form-label{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:0.5px}
+.form-row{display:flex;gap:16px}
+.form-row .form-group{flex:1}
+.form-hint{font-size:11px;color:var(--text-dim);margin-top:6px}
+.radio-group{display:flex;gap:8px;flex-wrap:wrap}
+.radio-opt{flex:1;min-width:80px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-glass);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;transition:all 0.2s;background:var(--bg-glass)}
+.radio-opt.selected{border-color:var(--accent-primary);background:rgba(168, 85, 247, 0.15);color:#e9d5ff}
+.radio-opt input{display:none}
+textarea{resize:vertical;min-height:120px;font-family:var(--font-mono);font-size:13px;line-height:1.6}
+
+/* ─── FILE DROP ─── */
+.drop-zone{border:2px dashed var(--border-glass);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(168, 85, 247, 0.02)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent-primary);background:rgba(168, 85, 247, 0.08)}
+.drop-zone-ico{font-size:36px;margin-bottom:12px;display:block;filter:drop-shadow(0 4px 12px rgba(168,85,247,0.3))}
+.drop-zone-text{font-size:14px;font-weight:700;margin-bottom:6px}
+.drop-zone-sub{font-size:12px;color:var(--text-muted)}
+.drop-zone input[type=file]{display:none}
+
+/* ─── PROGRESS & RESULTS ─── */
+.result-list{display:flex;flex-direction:column;gap:8px;margin-top:16px;max-height:400px;overflow-y:auto;padding-right:8px}
+.result-row{background:rgba(168, 85, 247, 0.05);border:1px solid var(--border-glass);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;transition:background 0.2s}
+.result-row:hover{background:rgba(168, 85, 247, 0.1)}
+.result-row.ok{border-left:3px solid var(--accent-success)}
+.result-row.err{border-left:3px solid var(--accent-danger)}
+.result-row.pending{border-left:3px solid var(--accent-warning)}
+.result-id{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-status{font-size:11px;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-weight:700}
+.result-status.ok{background:rgba(16, 185, 129, 0.15);color:#6ee7b7}
+.result-status.err{background:rgba(244, 63, 94, 0.15);color:#fda4af}
+.result-status.pending{background:rgba(245, 158, 11, 0.15);color:#fcd34d}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:6px;background:var(--bg-glass);border:1px solid var(--border-glass);color:var(--text-muted);cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:var(--bg-glass-hover);color:var(--text-main);border-color:var(--border-glass-hover)}
+
+/* ─── PROGRESS BAR ─── */
+.pbar-wrap{background:rgba(168, 85, 247, 0.05);border:1px solid var(--border-glass);border-radius:var(--radius-md);padding:20px;margin:16px 0}
+.pbar-top{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:12px}
+.pbar-track{height:8px;background:rgba(168, 85, 247, 0.1);border-radius:10px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--accent-primary),var(--accent-secondary));border-radius:10px;transition:width 0.4s cubic-bezier(0.4, 0, 0.2, 1);box-shadow:0 0 12px rgba(168, 85, 247, 0.6)}
+
+/* ─── TAGS & BADGES ─── */
+.tag{font-size:11px;padding:4px 10px;border-radius:20px;font-family:var(--font-mono);font-weight:700}
+.tag-blue{background:rgba(168, 85, 247, 0.15);color:#d8b4fe}
+.tag-mint{background:rgba(16, 185, 129, 0.15);color:#6ee7b7}
+.tag-rose{background:rgba(244, 63, 94, 0.15);color:#fda4af}
+.tag-gold{background:rgba(251, 191, 36, 0.15);color:#fcd34d}
+.tag-violet{background:rgba(217, 70, 239, 0.15);color:#f0abfc}
+
+/* ─── SECTION HEADER ─── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.sec-title{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.sec-sub{font-size:13px;color:var(--text-muted);margin-top:4px}
+
+/* ─── ALERTS ─── */
+.alert{padding:14px 18px;border-radius:var(--radius-md);font-size:13px;line-height:1.5;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;border:1px solid transparent}
+.alert-info{background:rgba(168, 85, 247, 0.1);border-color:rgba(168, 85, 247, 0.2);color:#e9d5ff}
+.alert-warn{background:rgba(245, 158, 11, 0.1);border-color:rgba(245, 158, 11, 0.2);color:#fcd34d}
+.alert-err{background:rgba(244, 63, 94, 0.1);border-color:rgba(244, 63, 94, 0.2);color:#fda4af}
+.alert-ok{background:rgba(16, 185, 129, 0.1);border-color:rgba(16, 185, 129, 0.2);color:#6ee7b7}
+
+/* ─── TABLE ─── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border-glass)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:14px 18px;background:rgba(168, 85, 247, 0.05);color:var(--text-muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border-glass)}
+td{padding:14px 18px;border-bottom:1px solid var(--border-glass);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(168, 85, 247, 0.05)}
+
+/* ─── TABS ─── */
+.sub-tabs{display:flex;gap:4px;background:rgba(168, 85, 247, 0.05);padding:6px;border-radius:var(--radius-md);margin-bottom:24px;width:fit-content;border:1px solid var(--border-glass)}
+.sub-tab{padding:8px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all 0.2s}
+.sub-tab:hover{color:var(--text-main)}
+.sub-tab.active{background:var(--bg-glass-hover);color:var(--text-main);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+
+/* ─── MODAL ─── */
+#overlay{position:fixed;inset:0;background:rgba(3, 0, 5, 0.8);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.3s}
+#overlay.show{display:flex;opacity:1}
+.modal{background:var(--bg-main);border:1px solid var(--border-glass-hover);border-radius:var(--radius-lg);padding:32px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,0.8);transform:scale(0.95);transition:transform 0.3s}
+#overlay.show .modal{transform:scale(1)}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:24px;letter-spacing:-0.5px}
+
+/* ─── LOGIN WALL ─── */
+.login-wall{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;text-align:center;gap:20px;background:var(--bg-glass);border:1px solid var(--border-glass);border-radius:var(--radius-lg);backdrop-filter:var(--blur)}
+.login-wall-ico{font-size:56px;filter:drop-shadow(0 8px 24px rgba(168,85,247,0.4))}
+.login-wall h3{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.login-wall p{font-size:14px;color:var(--text-muted);max-width:320px;line-height:1.6}
+
+/* ─── VIP CARDS ─── */
+.plan-card{background:var(--bg-glass);border:1px solid var(--border-glass);border-radius:var(--radius-lg);padding:32px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden}
+.plan-card:hover{transform:translateY(-4px);border-color:var(--border-glass-hover)}
+.plan-card.featured{border-color:var(--accent-gold);background:linear-gradient(180deg, rgba(251, 191, 36, 0.05) 0%, var(--bg-glass) 100%);box-shadow:0 8px 32px rgba(251, 191, 36, 0.1)}
+.plan-name{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.plan-price{font-size:40px;font-weight:800;line-height:1;letter-spacing:-2px}
+.plan-period{font-size:13px;color:var(--text-muted);margin-top:4px;font-weight:500}
+.plan-features{text-align:left;margin:24px 0;display:flex;flex-direction:column;gap:12px}
+.plan-feat{font-size:13px;display:flex;align-items:center;gap:10px;color:var(--text-muted);font-weight:500}
+.plan-feat::before{content:'✓';color:var(--accent-success);font-weight:900;flex-shrink:0;font-size:14px}
+
+/* ─── MOBILE ─── */
+#menu-toggle{display:none;width:40px;height:40px;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:var(--bg-glass);border:1px solid var(--border-glass);flex-shrink:0}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(2px);z-index:40;opacity:0;transition:opacity 0.3s}
+#sidebar-overlay.show{display:block;opacity:1}
+
+/* ─── WAVEFORM ─── */
+.waveform{height:80px;background:rgba(168, 85, 247, 0.05);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;border:1px dashed var(--border-glass);margin:16px 0;font-weight:500}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  #menu-toggle{display:flex}
+  #sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);width:280px}
+  #sidebar.open{transform:translateX(0)}
+  #content{padding:20px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .tool-grid{grid-template-columns:1fr 1fr}
+  .form-row{flex-direction:column;gap:0}
+  #header{padding:0 20px}
+  .hdr-title{font-size:18px}
+  .sec-title{font-size:20px}
+}
+@media(max-width:480px){
+  .tool-grid{grid-template-columns:1fr}
+  .radio-group{flex-direction:column}
+  .radio-opt{width:100%}
+  .plan-card{padding:24px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG Icons -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-spoof" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-discord" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.86a8.17 8.17 0 0 0 4.77 1.52V7.01a4.85 4.85 0 0 1-1-.32z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+</svg>
+
+<div id="sidebar-overlay"></div>
+
+<div id="app">
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <!-- LOGO PAEE CONVERTER -->
+    <img src="logo.png" alt="PaeeConverter Logo" class="logo-img"/>
+    <div>
+      <div class="logo-text">PaeeConverter</div>
+      <div class="logo-sub">v2.0 · Asset Tools</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">Tools</div>
+  <button class="nav-btn active" data-panel="home">
+    <svg class="nav-ico"><use href="#i-home"/></svg>Dashboard
+  </button>
+  <button class="nav-btn" data-panel="spoof">
+    <svg class="nav-ico"><use href="#i-spoof"/></svg>Asset Spoofer
+    <span class="nav-badge">BULK</span>
+  </button>
+  <button class="nav-btn" data-panel="audio">
+    <svg class="nav-ico"><use href="#i-music"/></svg>Audio Tools
+  </button>
+  <button class="nav-btn" data-panel="decal">
+    <svg class="nav-ico"><use href="#i-image"/></svg>Decal Uploader
+  </button>
+  <button class="nav-btn" data-panel="model">
+    <svg class="nav-ico"><use href="#i-box"/></svg>Model Uploader
+  </button>
+
+  <div class="sidebar-section">Account</div>
+  <button class="nav-btn" data-panel="vip">
+    <svg class="nav-ico"><use href="#i-crown"/></svg>VIP &amp; Harga
+    <span class="nav-lock">PRO</span>
+  </button>
+  <button class="nav-btn" data-panel="history">
+    <svg class="nav-ico"><use href="#i-history"/></svg>Riwayat
+  </button>
+  <button class="nav-btn" data-panel="settings">
+    <svg class="nav-ico"><use href="#i-settings"/></svg>Pengaturan
+  </button>
+
+  <div class="sidebar-footer">
+    <div class="user-chip" id="userChip">
+      <div class="user-av-ph" id="userAvPh">?</div>
+      <div>
+        <div class="user-name" id="userName">Belum Login</div>
+        <div class="user-plan free" id="userPlan">Free</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:12px;justify-content:center;font-size:13px" id="loginBtn">
+      <svg width="16" height="16"><use href="#i-discord"/></svg>
+      Login Discord
+    </button>
+  </div>
+</nav>
+
+<div id="main">
+  <header id="header">
+    <div style="display:flex;align-items:center;gap:16px">
+      <button id="menu-toggle" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="hdr-title" id="hdrTitle">Dashboard</div>
+        <div class="hdr-sub" id="hdrSub">Selamat datang di PaeeConverter</div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <div id="quotaChip" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);font-weight:600"></div>
+      <button class="btn btn-primary btn-sm" onclick="showPanel('spoof')">
+        <svg width="14" height="14"><use href="#i-zap"/></svg>Quick Spoof
+      </button>
+    </div>
+  </header>
+
+  <div id="content">
+
+    <!-- ═══ PANEL: HOME ═══ -->
+    <div class="panel active" id="p-home">
+      <div class="grid-auto" style="margin-bottom:24px">
+        <div class="stat-card">
+          <div class="stat-ico" style="background:rgba(168, 85, 247, 0.15)">🔄</div>
+          <div>
+            <div class="stat-val" id="st-spoofed">0</div>
+            <div class="stat-lbl">Total Spoofed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico" style="background:rgba(16, 185, 129, 0.15)">🎵</div>
+          <div>
+            <div class="stat-val" id="st-audio">0</div>
+            <div class="stat-lbl">Audio Diproses</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico" style="background:rgba(245, 158, 11, 0.15)">⚡</div>
+          <div>
+            <div class="stat-val" id="st-today">0</div>
+            <div class="stat-lbl">Upload Hari Ini</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico" style="background:rgba(217, 70, 239, 0.15)">👑</div>
+          <div>
+            <div class="stat-val" id="st-quota">7</div>
+            <div class="stat-lbl">Sisa Kuota/24jam</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div class="sec-hdr"><div><div class="sec-title">Semua Tools</div><div class="sec-sub">Pilih tool untuk mulai bekerja</div></div></div>
+        <div class="tool-grid">
+          <div class="tool-card" onclick="showPanel('spoof')">
+            <div class="tool-card-ico" style="background:rgba(168, 85, 247, 0.15)">🔄</div>
+            <div class="tool-card-name">Asset Spoofer</div>
+            <div class="tool-card-desc">Spoof audio, decal, model & animasi. Bulk 500+ ID otomatis.</div>
+            <span class="tool-card-badge tag-blue">BULK</span>
+          </div>
+          <div class="tool-card" onclick="showPanel('audio')">
+            <div class="tool-card-ico" style="background:rgba(16, 185, 129, 0.15)">🎵</div>
+            <div class="tool-card-name">Audio Tools</div>
+            <div class="tool-card-desc">Upload, convert, YouTube/TikTok import, speed control.</div>
+            <span class="tool-card-badge tag-mint">NEW</span>
+          </div>
+          <div class="tool-card" onclick="showPanel('decal')">
+            <div class="tool-card-ico" style="background:rgba(244, 63, 94, 0.15)">🖼️</div>
+            <div class="tool-card-name">Decal Uploader</div>
+            <div class="tool-card-desc">Upload PNG/JPG/BMP langsung ke Roblox via Open Cloud.</div>
+          </div>
+          <div class="tool-card" onclick="showPanel('model')">
+            <div class="tool-card-ico" style="background:rgba(245, 158, 11, 0.15)">📦</div>
+            <div class="tool-card-name">Model Uploader</div>
+            <div class="tool-card-desc">Upload file RBXM langsung ke account atau group Roblox.</div>
+          </div>
+          <div class="tool-card" onclick="showPanel('vip')" style="border-color:rgba(251, 191, 36, 0.3)">
+            <div class="tool-card-ico" style="background:rgba(251, 191, 36, 0.15)">👑</div>
+            <div class="tool-card-name">VIP Premium</div>
+            <div class="tool-card-desc">Upload unlimited, priority queue, semua fitur terbuka.</div>
+            <span class="tool-card-badge tag-gold">VIP</span>
+          </div>
+          <div class="tool-card" onclick="showPanel('history')">
+            <div class="tool-card-ico" style="background:rgba(217, 70, 239, 0.15)">📋</div>
+            <div class="tool-card-name">Riwayat</div>
+            <div class="tool-card-desc">Lihat semua hasil upload dan spoof dengan ID lengkap.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        💡 <strong>Tips:</strong> Login Discord untuk mulai. Akun gratis dapat 7 upload/24 jam. Upgrade VIP untuk unlimited!
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: SPOOF ═══ -->
+    <div class="panel" id="p-spoof">
+      <div class="sec-hdr">
+        <div><div class="sec-title">🔄 Asset Spoofer</div><div class="sec-sub">Spoof banyak asset sekaligus — audio, decal, model, animasi</div></div>
+      </div>
+
+      <div id="spoof-login-wall" class="login-wall" style="display:none">
+        <div class="login-wall-ico">🔒</div>
+        <h3>Login Dulu</h3>
+        <p>Kamu perlu login Discord untuk menggunakan Asset Spoofer.</p>
+        <button class="btn btn-primary" onclick="doLogin()"><svg width="16" height="16"><use href="#i-discord"/></svg>Login Discord</button>
+      </div>
+
+      <div id="spoof-main">
+        <div class="grid-2" style="margin-bottom:24px">
+          <!-- Kolom kiri: Config -->
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div class="card">
+              <div class="card-title">⚙️ Konfigurasi</div>
+              <div class="form-group">
+                <label class="form-label">Tipe Asset</label>
+                <div class="radio-group" id="spoofTypeGroup">
+                  <label class="radio-opt selected"><input type="radio" name="spoofType" value="audio" checked>🎵 Audio</label>
+                  <label class="radio-opt"><input type="radio" name="spoofType" value="decal">🖼️ Decal</label>
+                  <label class="radio-opt"><input type="radio" name="spoofType" value="model">📦 Model</label>
+                  <label class="radio-opt"><input type="radio" name="spoofType" value="animation">🎬 Anim</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Target</label>
+                  <select id="spoofTarget">
+                    <option value="user">User</option>
+                    <option value="group">Group</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Owner ID</label>
+                  <input type="text" id="spoofOwnerId" placeholder="123456789" inputmode="numeric"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Open Cloud API Key</label>
+                <input type="password" id="spoofApiKey" placeholder="cUBdxxxxxxxx..."/>
+                <div class="form-hint">Butuh izin Assets: Read + Write</div>
+              </div>
+              <div class="alert alert-info" style="margin-bottom:0; font-size:12px;">
+                🔒 Cookie diurus otomatis oleh server. Kamu cukup isi API Key.
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">📥 Import ID</div>
+              <div class="sub-tabs" id="importTabGroup">
+                <div class="sub-tab active" data-itab="manual">Manual</div>
+                <div class="sub-tab" data-itab="file">File</div>
+              </div>
+              <div id="itab-manual">
+                <textarea id="spoofIds" placeholder="Tempel Asset ID, satu per baris:&#10;123456789&#10;987654321&#10;..."></textarea>
+                <div class="form-hint" id="spoofIdCount">0 ID</div>
+              </div>
+              <div id="itab-file" style="display:none">
+                <div class="drop-zone" id="importDrop" onclick="document.getElementById('importFile').click()">
+                  <input type="file" id="importFile" accept=".txt,.csv,.json,.lua" onchange="importFile(this)"/>
+                  <div class="drop-zone-ico">📁</div>
+                  <div class="drop-zone-text">Drop file di sini</div>
+                  <div class="drop-zone-sub">TXT, CSV, JSON, Lua</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolom kanan: Run & Progress -->
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div class="card">
+              <div class="card-title">🚀 Eksekusi</div>
+              <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+                <button class="btn btn-primary" onclick="startSpoof()" id="spoofRunBtn">
+                  <svg width="14" height="14"><use href="#i-zap"/></svg>Mulai Spoof
+                </button>
+                <button class="btn btn-ghost" onclick="stopSpoof()" id="spoofStopBtn" disabled>Stop</button>
+                <button class="btn btn-ghost btn-sm" onclick="clearSpoof()">Clear</button>
+              </div>
+              <div class="pbar-wrap" id="spoofPbar" style="display:none">
+                <div class="pbar-top">
+                  <span id="spoofPbarLabel">Memproses...</span>
+                  <span id="spoofPbarPct">0%</span>
+                </div>
+                <div class="pbar-track"><div class="pbar-fill" id="spoofPbarFill" style="width:0%"></div></div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:10px;font-weight:500" id="spoofEta">-</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+                <div style="font-size:13px;color:var(--text-muted);font-weight:600" id="spoofSummary">Siap</div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-ghost btn-sm" onclick="exportResults('txt')" id="expTxtBtn" disabled>TXT</button>
+                  <button class="btn btn-ghost btn-sm" onclick="exportResults('csv')" id="expCsvBtn" disabled>CSV</button>
+                  <button class="btn btn-ghost btn-sm" onclick="exportResults('lua')" id="expLuaBtn" disabled>Lua</button>
+                  <button class="btn btn-ghost btn-sm" onclick="exportResults('json')" id="expJsonBtn" disabled>JSON</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="flex:1">
+              <div class="card-title">📋 Hasil</div>
+              <div class="result-list" id="spoofResults">
+                <div style="font-size:13px;color:var(--text-muted);text-align:center;padding:32px 0">Hasil spoof akan muncul di sini</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: AUDIO ═══ -->
+    <div class="panel" id="p-audio">
+      <div class="sec-hdr">
+        <div><div class="sec-title">🎵 Audio Tools</div><div class="sec-sub">Upload, convert, dan proses audio untuk Roblox</div></div>
+      </div>
+
+      <div class="sub-tabs" id="audioTabGroup">
+        <div class="sub-tab active" data-atab="upload">Upload Audio</div>
+        <div class="sub-tab" data-atab="youtube">YouTube</div>
+        <div class="sub-tab" data-atab="tiktok">TikTok</div>
+        <div class="sub-tab" data-atab="convert">Converter</div>
+      </div>
+
+      <!-- Audio Upload -->
+      <div id="atab-upload">
+        <div class="grid-2">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div class="card">
+              <div class="card-title">📁 File Audio</div>
+              <div class="drop-zone" onclick="document.getElementById('audioFile').click()">
+                <input type="file" id="audioFile" accept=".mp3,.ogg" onchange="audioFileSelected(this)"/>
+                <div class="drop-zone-ico">🎵</div>
+                <div class="drop-zone-text">Drop atau klik pilih audio</div>
+                <div class="drop-zone-sub" id="audioFileName">MP3, OGG · Maks 20MB</div>
+              </div>
+              <div class="waveform" id="audioWaveform">Waveform akan muncul setelah file dipilih</div>
+              <audio controls id="audioPreview" style="width:100%;display:none;margin-top:12px;border-radius:8px"></audio>
+            </div>
+            <div class="card">
+              <div class="card-title">🎚️ Playback Speed</div>
+              <div class="form-group">
+                <label class="form-label">Speed: <span id="speedVal" style="color:var(--accent-primary)">1.0x</span></label>
+                <input type="range" id="speedRange" min="0.5" max="2" step="0.05" value="1" oninput="updateSpeed(this.value)" style="width:100%;margin-top:8px;accent-color:var(--accent-primary)"/>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-ghost btn-sm" onclick="setSpeed(0.75)">0.75x</button>
+                <button class="btn btn-ghost btn-sm" onclick="setSpeed(1.0)">1.0x</button>
+                <button class="btn btn-ghost btn-sm" onclick="setSpeed(1.25)">1.25x</button>
+                <button class="btn btn-ghost btn-sm" onclick="setSpeed(1.5)">1.5x</button>
+                <button class="btn btn-ghost btn-sm" onclick="setSpeed(2.0)">2.0x</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div class="card">
+              <div class="card-title">📤 Upload ke Roblox</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Target</label>
+                  <select id="audioTarget"><option value="user">User</option><option value="group">Group</option></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Owner ID</label>
+                  <input type="text" id="audioOwnerId" placeholder="123456789"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">API Key</label>
+                <input type="password" id="audioApiKey" placeholder="cUBdxxxxxxxx..."/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nama Asset</label>
+                <input type="text" id="audioName" placeholder="Nama audio di Roblox"/>
+              </div>
+              <button class="btn btn-primary" onclick="uploadAudio()" id="audioUploadBtn" style="width:100%;justify-content:center">
+                <svg width="14" height="14"><use href="#i-upload"/></svg>Upload ke Roblox
+              </button>
+              <div id="audioResult" style="margin-top:16px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YouTube Import -->
+      <div id="atab-youtube" style="display:none">
+        <div class="card" style="max-width:640px">
+          <div class="card-title"><svg width="20" height="20" style="color:#ff0000"><use href="#i-yt"/></svg>YouTube → MP3</div>
+          <div class="card-desc">Tempel link YouTube, convert ke MP3, langsung upload ke Roblox.</div>
+          <div class="form-group">
+            <label class="form-label">Link YouTube</label>
+            <input type="url" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." oninput="ytUrlInput()"/>
+            <div class="form-hint" id="ytTitle" style="color:var(--accent-primary); font-weight:600; margin-top:8px"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Target</label>
+              <select id="ytTarget"><option value="user">User</option><option value="group">Group</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Owner ID</label>
+              <input type="text" id="ytOwnerId" placeholder="123456789"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="password" id="ytApiKey" placeholder="cUBdxxxxxxxx..."/>
+          </div>
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-danger" onclick="convertYt()" id="ytConvertBtn" style="flex:1;justify-content:center">
+              <svg width="14" height="14"><use href="#i-yt"/></svg>Convert & Upload
+            </button>
+            <button class="btn btn-ghost" onclick="convertYtOnly()" id="ytDlBtn">Download MP3</button>
+          </div>
+          <div id="ytResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <!-- TikTok Import -->
+      <div id="atab-tiktok" style="display:none">
+        <div class="card" style="max-width:640px">
+          <div class="card-title"><svg width="20" height="20"><use href="#i-tiktok"/></svg>TikTok → MP3</div>
+          <div class="card-desc">Ambil audio dari video TikTok, convert ke MP3.</div>
+          <div class="form-group">
+            <label class="form-label">Link TikTok</label>
+            <input type="url" id="ttUrl" placeholder="https://www.tiktok.com/@user/video/..."/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Target</label>
+              <select id="ttTarget"><option value="user">User</option><option value="group">Group</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Owner ID</label>
+              <input type="text" id="ttOwnerId" placeholder="123456789"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="password" id="ttApiKey" placeholder="cUBdxxxxxxxx..."/>
+          </div>
+          <button class="btn btn-primary" onclick="convertTt()" id="ttConvertBtn" style="width:100%;justify-content:center">
+            <svg width="14" height="14"><use href="#i-tiktok"/></svg>Convert & Upload
+          </button>
+          <div id="ttResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <!-- Audio Converter -->
+      <div id="atab-convert" style="display:none">
+        <div class="card" style="max-width:640px">
+          <div class="card-title">🔧 Audio Converter</div>
+          <div class="card-desc">Convert format audio — MP3, OGG, WAV, FLAC → MP3/OGG.</div>
+          <div class="drop-zone" onclick="document.getElementById('convertFile').click()">
+            <input type="file" id="convertFile" accept="audio/*" onchange="convertFileSelected(this)"/>
+            <div class="drop-zone-ico">🔊</div>
+            <div class="drop-zone-text">Drop audio untuk convert</div>
+            <div class="drop-zone-sub" id="convertFileName">MP3, OGG, WAV, FLAC, M4A</div>
+          </div>
+          <div class="form-row" style="margin-top:16px">
+            <div class="form-group">
+              <label class="form-label">Format Output</label>
+              <select id="convertFormat"><option value="mp3">MP3</option><option value="ogg">OGG</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bitrate</label>
+              <select id="convertBitrate"><option value="128">128 kbps</option><option value="192">192 kbps</option><option value="320">320 kbps</option></select>
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="doConvert()" style="width:100%;justify-content:center">Convert</button>
+          <div id="convertResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: DECAL ═══ -->
+    <div class="panel" id="p-decal">
+      <div class="sec-hdr">
+        <div><div class="sec-title">🖼️ Decal Uploader</div><div class="sec-sub">Upload gambar langsung ke Roblox via Open Cloud API</div></div>
+      </div>
+      <div class="grid-2">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card">
+            <div class="card-title">📁 File Gambar</div>
+            <div class="drop-zone" onclick="document.getElementById('decalFile').click()">
+              <input type="file" id="decalFile" accept=".png,.jpg,.jpeg,.bmp" onchange="decalFileSelected(this)"/>
+              <div class="drop-zone-ico" id="decalPreviewWrap">🖼️</div>
+              <div class="drop-zone-text">Drop atau klik pilih gambar</div>
+              <div class="drop-zone-sub" id="decalFileName">PNG, JPG, BMP · Maks 20MB</div>
+            </div>
+            <img id="decalPreview" style="width:100%;border-radius:var(--radius-md);margin-top:16px;display:none;max-height:240px;object-fit:contain;background:rgba(0,0,0,0.2)"/>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📤 Upload ke Roblox</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Target</label>
+              <select id="decalTarget"><option value="user">User</option><option value="group">Group</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Owner ID</label>
+              <input type="text" id="decalOwnerId" placeholder="123456789"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="password" id="decalApiKey" placeholder="cUBdxxxxxxxx..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Decal</label>
+            <input type="text" id="decalName" placeholder="Nama decal di Roblox"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deskripsi (opsional)</label>
+            <input type="text" id="decalDesc" placeholder="Deskripsi singkat..."/>
+          </div>
+          <button class="btn btn-primary" onclick="uploadDecal()" style="width:100%;justify-content:center">
+            <svg width="14" height="14"><use href="#i-upload"/></svg>Upload Decal
+          </button>
+          <div id="decalResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: MODEL ═══ -->
+    <div class="panel" id="p-model">
+      <div class="sec-hdr">
+        <div><div class="sec-title">📦 Model Uploader</div><div class="sec-sub">Upload file RBXM/RBXMX ke Roblox</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📁 File Model</div>
+          <div class="drop-zone" onclick="document.getElementById('modelFile').click()">
+            <input type="file" id="modelFile" accept=".rbxm,.rbxmx,.fbx" onchange="modelFileSelected(this)"/>
+            <div class="drop-zone-ico">📦</div>
+            <div class="drop-zone-text">Drop atau klik pilih model</div>
+            <div class="drop-zone-sub" id="modelFileName">RBXM, RBXMX, FBX · Maks 20MB</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📤 Upload ke Roblox</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Target</label>
+              <select id="modelTarget"><option value="user">User</option><option value="group">Group</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Owner ID</label>
+              <input type="text" id="modelOwnerId" placeholder="123456789"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="password" id="modelApiKey" placeholder="cUBdxxxxxxxx..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Model</label>
+            <input type="text" id="modelName" placeholder="Nama model di Roblox"/>
+          </div>
+          <button class="btn btn-warning" onclick="uploadModel()" style="width:100%;justify-content:center;background:var(--accent-warning);color:#05080f;font-weight:800">
+            <svg width="14" height="14"><use href="#i-upload"/></svg>Upload Model
+          </button>
+          <div id="modelResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: VIP ═══ -->
+    <div class="panel" id="p-vip">
+      <div class="sec-hdr">
+        <div><div class="sec-title">👑 VIP &amp; Harga</div><div class="sec-sub">Upgrade untuk fitur unlimited dan priority</div></div>
+      </div>
+      <div class="grid-3" style="margin-bottom:24px">
+        <div class="plan-card">
+          <div class="plan-name" style="color:var(--text-muted)">Free</div>
+          <div class="plan-price">Rp 0</div>
+          <div class="plan-period">Selamanya</div>
+          <div class="plan-features">
+            <div class="plan-feat">7 upload per 24 jam</div>
+            <div class="plan-feat">Semua tipe asset</div>
+            <div class="plan-feat">Audio converter</div>
+            <div class="plan-feat" style="color:var(--text-dim)"><span style="color:var(--accent-danger)">✗</span> Bulk spoof</div>
+            <div class="plan-feat" style="color:var(--text-dim)"><span style="color:var(--accent-danger)">✗</span> YT/TikTok import</div>
+          </div>
+          <button class="btn btn-ghost" style="width:100%;justify-content:center">Aktif</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-name" style="color:var(--accent-gold)">👑 VIP 30 Hari</div>
+          <div class="plan-price" style="color:var(--accent-gold)">Rp 60K</div>
+          <div class="plan-period">per bulan</div>
+          <div class="plan-features">
+            <div class="plan-feat">Upload unlimited</div>
+            <div class="plan-feat">Bulk spoof 500+ ID</div>
+            <div class="plan-feat">YouTube & TikTok import</div>
+            <div class="plan-feat">Priority queue</div>
+            <div class="plan-feat">Semua fitur terbuka</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;background:linear-gradient(135deg, var(--accent-gold), #f59e0b);color:#05080f" onclick="openBuy(30)">Beli VIP 30 Hari</button>
+        </div>
+        <div class="plan-card">
+          <div class="plan-name" style="color:#d8b4fe">VIP 365 Hari</div>
+          <div class="plan-price">Rp 499K</div>
+          <div class="plan-period">per tahun · hemat 30%</div>
+          <div class="plan-features">
+            <div class="plan-feat">Semua fitur VIP 30 hari</div>
+            <div class="plan-feat">Hemat Rp 221.000</div>
+            <div class="plan-feat">Support prioritas</div>
+            <div class="plan-feat">Early access fitur baru</div>
+            <div class="plan-feat">Badge VIP di profil</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="openBuy(365)">Beli VIP 1 Tahun</button>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        💳 Pembayaran via QRIS / Transfer Bank. Hubungi owner setelah transfer untuk aktivasi manual.
+        <br/>📱 WhatsApp: <a href="https://wa.me/6287729035761" style="color:var(--accent-success); font-weight:700">087729035761</a>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: HISTORY ═══ -->
+    <div class="panel" id="p-history">
+      <div class="sec-hdr">
+        <div><div class="sec-title">📋 Riwayat</div><div class="sec-sub">Semua upload dan spoof yang pernah dilakukan</div></div>
+        <div>
+          <button class="btn btn-ghost btn-sm" onclick="clearHistory()">
+            <svg width="14" height="14"><use href="#i-trash"/></svg>Hapus Semua
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Tipe</th>
+                <th>Nama / ID Sumber</th>
+                <th>Asset ID Baru</th>
+                <th>Waktu</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">Belum ada riwayat</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: SETTINGS ═══ -->
+    <div class="panel" id="p-settings">
+      <div class="sec-hdr">
+        <div><div class="sec-title">⚙️ Pengaturan</div><div class="sec-sub">Konfigurasi default API key dan preferensi</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔑 API Default</div>
+          <div class="card-desc">Disimpan di browser — tidak dikirim ke server.</div>
+          <div class="form-group">
+            <label class="form-label">Open Cloud API Key</label>
+            <input type="password" id="defApiKey" placeholder="cUBdxxxxxxxx..." oninput="saveSettings()"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Default Target</label>
+              <select id="defTarget" onchange="saveSettings()">
+                <option value="user">User</option>
+                <option value="group">Group</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Owner ID</label>
+              <input type="text" id="defOwnerId" placeholder="123456789" oninput="saveSettings()"/>
+            </div>
+          </div>
+          <div class="alert alert-ok" id="settingsSaved" style="display:none">✓ Disimpan</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎚️ Preferensi</div>
+          <div class="form-group">
+            <label class="form-label">Koneksi Paralel (Bulk Spoof)</label>
+            <select id="defConcurrency" onchange="saveSettings()">
+              <option value="3">3 (default)</option>
+              <option value="5">5 (lebih cepat)</option>
+              <option value="10">10 (VIP only)</option>
+            </select>
+            <div class="form-hint">Lebih tinggi = lebih cepat tapi lebih banyak request</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Auto-load Settings di Form</label>
+            <select id="defAutoLoad" onchange="saveSettings()">
+              <option value="1">Ya</option>
+              <option value="0">Tidak</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Format Export Default</label>
+            <select id="defExport" onchange="saveSettings()">
+              <option value="txt">TXT</option>
+              <option value="csv">CSV</option>
+              <option value="lua">Lua table</option>
+              <option value="json">JSON</option>
+            </select>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearSettings()">Reset Semua Setting</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══ MODAL ═══ -->
+<div id="overlay">
+  <div class="modal" id="modalBox">
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE & LOGIC (Tidak ada yang berubah)
+// ═══════════════════════════════════════════
+var STATE = {
+  loggedIn: false,
+  premium: false,
+  user: null,
+  quota: { limit:7, used:0, remaining:7, resetAt:0 },
+  spoofResults: [],
+  spoofRunning: false,
+  spoofStop: false,
+  history: JSON.parse(localStorage.getItem('paee_history')||'[]'),
+  settings: JSON.parse(localStorage.getItem('paee_settings')||'{}'),
+  currentPanel: 'home',
+};
+
+var PANEL_TITLES = {
+  home: ['Dashboard','Selamat datang di PaeeConverter'],
+  spoof: ['Asset Spoofer','Bulk spoof audio, decal, model & animasi'],
+  audio: ['Audio Tools','Upload, convert, YouTube/TikTok import'],
+  decal: ['Decal Uploader','Upload gambar ke Roblox via Open Cloud'],
+  model: ['Model Uploader','Upload RBXM/RBXMX ke Roblox'],
+  vip: ['VIP & Harga','Upgrade untuk fitur unlimited'],
+  history: ['Riwayat','Semua upload dan spoof yang pernah dilakukan'],
+  settings: ['Pengaturan','Konfigurasi API key dan preferensi'],
+};
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  var el = document.getElementById('p-'+id);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+  var nb = document.querySelector('.nav-btn[data-panel="'+id+'"]');
+  if(nb) nb.classList.add('active');
+  var titles = PANEL_TITLES[id] || [id,''];
+  document.getElementById('hdrTitle').textContent = titles[0];
+  document.getElementById('hdrSub').textContent = titles[1];
+  STATE.currentPanel = id;
+  if(window.innerWidth<=768){
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('show');
+  }
+}
+function toggleSidebar() {
+  var s = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  s.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+document.getElementById('sidebar-overlay').addEventListener('click',function(){ toggleSidebar(); });
+document.querySelectorAll('.nav-btn').forEach(function(b){
+  b.addEventListener('click',function(){ showPanel(b.dataset.panel); });
+});
+
+(function(){
+  var grp = document.getElementById('audioTabGroup');
+  if(!grp) return;
+  grp.querySelectorAll('.sub-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      grp.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      ['upload','youtube','tiktok','convert'].forEach(function(k){
+        var el = document.getElementById('atab-'+k);
+        if(el) el.style.display = (k===tab.dataset.atab)?'':'none';
+      });
+    });
+  });
+})();
+(function(){
+  var grp = document.getElementById('importTabGroup');
+  if(!grp) return;
+  grp.querySelectorAll('.sub-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      grp.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      ['manual','file'].forEach(function(k){
+        var el = document.getElementById('itab-'+k);
+        if(el) el.style.display = (k===tab.dataset.itab)?'':'none';
+      });
+    });
+  });
+})();
+
+document.querySelectorAll('.radio-opt input').forEach(function(inp){
+  inp.addEventListener('change',function(){
+    var grp = inp.closest('.radio-group');
+    if(grp) grp.querySelectorAll('.radio-opt').forEach(function(opt){ opt.classList.toggle('selected', opt.querySelector('input')===inp); });
+  });
+});
+
+function doLogin(){
+  window.location.href='/api/discord-login';
+}
+document.getElementById('loginBtn').addEventListener('click',function(){
+  if(STATE.loggedIn){ doLogout(); } else { doLogin(); }
+});
+function doLogout(){
+  fetch('/api/me',{method:'DELETE',headers:{'x-requested-with':'paestudio','content-type':'application/json'},body:'{}'})
+    .finally(function(){ window.location.reload(); });
+}
+function updateUserUI(){
+  var u = STATE.user;
+  var avPh = document.getElementById('userAvPh');
+  var uName = document.getElementById('userName');
+  var uPlan = document.getElementById('userPlan');
+  var loginBtn = document.getElementById('loginBtn');
+  if(STATE.loggedIn && u){
+    if(u.avatar){ var img=document.createElement('img');img.src=u.avatar;img.className='user-av';avPh.replaceWith(img); }
+    else{ avPh.textContent=(u.name||'?')[0].toUpperCase(); }
+    uName.textContent=u.name||'User';
+    uPlan.textContent=STATE.premium?'👑 VIP':'Free';
+    uPlan.className='user-plan '+(STATE.premium?'vip':'free');
+    loginBtn.textContent='Logout';
+    loginBtn.className='btn btn-ghost';
+    loginBtn.style='width:100%;margin-top:12px;justify-content:center;font-size:13px;color:var(--accent-danger)';
+  }
+  var qc = document.getElementById('quotaChip');
+  if(!STATE.premium && STATE.quota){
+    qc.textContent=STATE.quota.remaining+'/'+STATE.quota.limit+' upload';
+  } else if(STATE.premium){
+    qc.textContent='∞ VIP';
+    qc.style='color:var(--accent-gold)';
+  }
+  document.getElementById('st-quota').textContent = STATE.premium?'∞':(STATE.quota?STATE.quota.remaining:7);
+}
+async function fetchMe(){
+  try{
+    var r=await fetch('/api/me');
+    var d=await r.json();
+    if(d.loggedIn){
+      STATE.loggedIn=true;
+      STATE.user=d.user;
+      STATE.premium=d.user&&d.user.premium;
+      if(d.quota) STATE.quota=d.quota;
+    }
+  }catch(e){}
+  updateUserUI();
+  loadSettingsIntoForms();
+}
+(function(){
+  var p=new URLSearchParams(location.search).get('login');
+  if(p==='ok'||p==='trial'){ history.replaceState({},'','/'); }
+  if(p==='trial'){ setTimeout(function(){ showAlert('🎉 Trial VIP 1 hari aktif!','ok'); },500); }
+})();
+fetchMe();
+
+function saveSettings(){
+  STATE.settings={
+    apiKey: document.getElementById('defApiKey').value,
+    target: document.getElementById('defTarget').value,
+    ownerId: document.getElementById('defOwnerId').value,
+    concurrency: document.getElementById('defConcurrency').value,
+    autoLoad: document.getElementById('defAutoLoad').value,
+    exportFmt: document.getElementById('defExport').value,
+  };
+  localStorage.setItem('paee_settings',JSON.stringify(STATE.settings));
+  var saved=document.getElementById('settingsSaved');
+  saved.style.display='';
+  setTimeout(function(){ saved.style.display='none'; },1500);
+}
+function clearSettings(){
+  localStorage.removeItem('paee_settings');
+  STATE.settings={};
+  ['defApiKey','defOwnerId'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+}
+function loadSettingsIntoForms(){
+  var s=STATE.settings;
+  if(!s || !s.apiKey) return;
+  ['defApiKey','defOwnerId'].forEach(function(id){
+    var el=document.getElementById(id);
+    var key=id.replace('def','').replace(/^./,function(c){ return c.toLowerCase(); });
+    if(el && s[key!='apiKey'?key:'apiKey']) el.value=s[key]||s.apiKey||'';
+  });
+  if(s.apiKey){
+    document.getElementById('defApiKey').value=s.apiKey;
+    ['spoofApiKey','audioApiKey','ytApiKey','ttApiKey','decalApiKey','modelApiKey'].forEach(function(id){
+      var el=document.getElementById(id); if(el&&!el.value) el.value=s.apiKey;
+    });
+  }
+  if(s.ownerId){
+    ['spoofOwnerId','audioOwnerId','ytOwnerId','ttOwnerId','decalOwnerId','modelOwnerId'].forEach(function(id){
+      var el=document.getElementById(id); if(el&&!el.value) el.value=s.ownerId;
+    });
+  }
+  if(s.target){
+    ['spoofTarget','audioTarget','ytTarget','ttTarget','decalTarget','modelTarget'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value=s.target;
+    });
+  }
+}
+(function(){
+  var s=STATE.settings;
+  if(!s) return;
+  if(s.apiKey){ var el=document.getElementById('defApiKey'); if(el) el.value=s.apiKey; }
+  if(s.ownerId){ var el2=document.getElementById('defOwnerId'); if(el2) el2.value=s.ownerId; }
+  if(s.concurrency){ var el4=document.getElementById('defConcurrency'); if(el4) el4.value=s.concurrency; }
+  if(s.target){ var el5=document.getElementById('defTarget'); if(el5) el5.value=s.target; }
+  if(s.exportFmt){ var el6=document.getElementById('defExport'); if(el6) el6.value=s.exportFmt; }
+})();
+
+function showAlert(msg,type,container){
+  var c=container?document.getElementById(container):null;
+  if(!c) return;
+  c.innerHTML='<div class="alert alert-'+(type||'info')+'">'+msg+'</div>';
+}
+function copyText(txt){
+  navigator.clipboard.writeText(txt).catch(function(){});
+}
+function fmtTime(ts){
+  var d=new Date(ts);
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'2-digit'})
+    +' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+function requireLogin(){
+  if(!STATE.loggedIn){ showPanel('home'); openModal('<div class="login-wall"><div class="login-wall-ico">🔒</div><h3>Login Dulu</h3><p>Kamu perlu login Discord untuk menggunakan fitur ini.</p><br><button class="btn btn-primary" onclick="doLogin()"><svg width="16" height="16"><use href="#i-discord"/></svg> Login Discord</button></div>'); return false; }
+  return true;
+}
+function openModal(html){
+  document.getElementById('modalContent').innerHTML=html;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+}
+document.getElementById('overlay').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+
+function saveHistory(){
+  localStorage.setItem('paee_history',JSON.stringify(STATE.history.slice(0,500)));
+}
+function addHistory(type,src,assetId){
+  STATE.history.unshift({type:type,src:src,assetId:assetId,ts:Date.now()});
+  saveHistory();
+  renderHistory();
+  var today = document.getElementById('st-today');
+  if(today) today.textContent=parseInt(today.textContent||0)+1;
+}
+function renderHistory(){
+  var tbody=document.getElementById('historyBody');
+  if(!tbody) return;
+  if(!STATE.history.length){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">Belum ada riwayat</td></tr>'; return; }
+  tbody.innerHTML=STATE.history.slice(0,100).map(function(h){
+    var ico={'audio':'🎵','decal':'🖼️','model':'📦','spoof':'🔄','yt':'📺','tt':'🎵'}[h.type]||'📄';
+    return '<tr>'
+      +'<td><div style="width:32px;height:32px;border-radius:8px;background:rgba(168, 85, 247, 0.1);display:flex;align-items:center;justify-content:center;font-size:14px">'+ico+'</div></td>'
+      +'<td style="font-family:var(--font-mono);font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted)">'+h.src+'</td>'
+      +'<td><span class="tag tag-mint" style="cursor:pointer" onclick="copyText(\''+h.assetId+'\')">'+h.assetId+' <svg width="10" height="10" style="margin-left:4px"><use href="#i-copy"/></svg></span></td>'
+      +'<td style="color:var(--text-dim);font-size:12px;white-space:nowrap">'+fmtTime(h.ts)+'</td>'
+      +'<td><a href="https://create.roblox.com/store/asset/'+h.assetId+'" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Buka</a></td>'
+      +'</tr>';
+  }).join('');
+}
+function clearHistory(){
+  if(!confirm('Hapus semua riwayat?')) return;
+  STATE.history=[];
+  saveHistory();
+  renderHistory();
+}
+renderHistory();
+
+var spoofWorking=[];
+var spoofDone=[];
+
+document.getElementById('spoofIds').addEventListener('input',function(){
+  var ids=parseIds(this.value);
+  document.getElementById('spoofIdCount').textContent=ids.length+' ID';
+});
+
+function parseIds(text){
+  return text.split(/[\n,;\s]+/).map(function(s){ return s.trim(); }).filter(function(s){ return /^\d{5,20}$/.test(s); });
+}
+
+function importFile(input){
+  var f=input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(e){
+    var text=e.target.result;
+    var ids=[];
+    if(f.name.endsWith('.json')){ try{ var j=JSON.parse(text); ids=Array.isArray(j)?j:Object.values(j); ids=ids.map(String); }catch(e2){} }
+    else if(f.name.endsWith('.lua')){ ids=text.match(/\d{5,20}/g)||[]; }
+    else { ids=parseIds(text); }
+    var ta=document.getElementById('spoofIds');
+    ta.value=ids.join('\n');
+    document.getElementById('spoofIdCount').textContent=ids.length+' ID';
+    document.querySelectorAll('#importTabGroup .sub-tab')[0].click();
+  };
+  r.readAsText(f);
+}
+
+function setSpoofBusy(busy){
+  document.getElementById('spoofRunBtn').disabled=busy;
+  document.getElementById('spoofStopBtn').disabled=!busy;
+  STATE.spoofRunning=busy;
+  STATE.spoofStop=false;
+}
+
+async function startSpoof(){
+  if(!requireLogin()) return;
+  var ids=parseIds(document.getElementById('spoofIds').value);
+  if(!ids.length){ showAlert('Masukkan minimal 1 asset ID','warn','spoofResults'); return; }
+  var apiKey=document.getElementById('spoofApiKey').value.trim();
+  var ownerId=document.getElementById('spoofOwnerId').value.trim();
+  var target=document.getElementById('spoofTarget').value;
+  var type=document.querySelector('[name=spoofType]:checked').value;
+  if(!apiKey){ alert('API Key wajib diisi'); return; }
+  if(!ownerId){ alert('Owner ID wajib diisi'); return; }
+
+  spoofDone=[];
+  setSpoofBusy(true);
+  document.getElementById('spoofPbar').style.display='';
+  document.getElementById('spoofResults').innerHTML='';
+  document.getElementById('expTxtBtn').disabled=true;
+  document.getElementById('expCsvBtn').disabled=true;
+  document.getElementById('expLuaBtn').disabled=true;
+  document.getElementById('expJsonBtn').disabled=true;
+
+  var total=ids.length;
+  var done=0;
+  var ok=0;
+  var fail=0;
+  var startTs=Date.now();
+  var CONC=Math.min(parseInt(STATE.settings.concurrency||3), STATE.premium?10:3);
+
+  var queue=ids.slice();
+
+  async function worker(){
+    while(queue.length && !STATE.spoofStop){
+      var id=queue.shift();
+      var row=addSpoofRow(id,'pending','Memproses...');
+      var result=null;
+      try{
+        var audioBlob=null;
+        if(type==='audio'){
+          var pr=await fetch('/api/proxy-audio',{
+            method:'POST',
+            headers:{'content-type':'application/json','x-requested-with':'paestudio'},
+            body:JSON.stringify({id:id,apiKey:apiKey})
+          });
+          if(!pr.ok){ var pe=await pr.json().catch(function(){return{};}); throw new Error(pe.error||'Proxy gagal '+pr.status); }
+          audioBlob=await pr.blob();
+        }
+
+        var fd=new FormData();
+        fd.append('type',type==='animation'?'file':type);
+        fd.append('apiKey',apiKey);
+        fd.append('target',target);
+        fd.append('ownerId',ownerId);
+        fd.append('name','Spoofed_'+id);
+        fd.append('description','Spoofed via PaeeConverter');
+        if(audioBlob) fd.append('file',audioBlob,id+'.mp3');
+
+        var ur=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+        var ud=await ur.json().catch(function(){return{};});
+        if(!ur.ok || !ud.assetId) throw new Error(ud.error||'Upload gagal');
+        result={ok:true,assetId:ud.assetId};
+      }catch(e){
+        result={ok:false,error:e.message||'Error'};
+      }
+      done++;
+      if(result.ok){ ok++; updateSpoofRow(row,'ok',result.assetId); spoofDone.push({src:id,assetId:result.assetId}); addHistory(type,id,result.assetId); }
+      else{ fail++; updateSpoofRow(row,'err',result.error); spoofDone.push({src:id,assetId:'',error:result.error}); }
+      var pct=Math.round(done/total*100);
+      document.getElementById('spoofPbarFill').style.width=pct+'%';
+      document.getElementById('spoofPbarPct').textContent=pct+'%';
+      document.getElementById('spoofPbarLabel').textContent=done+'/'+total+' diproses';
+      var elapsed=(Date.now()-startTs)/1000;
+      var speed=done/elapsed;
+      var eta=speed>0?Math.round((total-done)/speed):0;
+      document.getElementById('spoofEta').textContent='⚡ '+done+' selesai · '+ok+' berhasil · '+fail+' gagal'+(eta>0?' · ETA '+eta+'s':'');
+      document.getElementById('spoofSummary').textContent=ok+' berhasil / '+fail+' gagal dari '+done+' ID';
+    }
+  }
+
+  var workers=[];
+  for(var i=0;i<CONC;i++) workers.push(worker());
+  await Promise.all(workers);
+
+  setSpoofBusy(false);
+  document.getElementById('spoofRunBtn').disabled=false;
+  document.getElementById('expTxtBtn').disabled=false;
+  document.getElementById('expCsvBtn').disabled=false;
+  document.getElementById('expLuaBtn').disabled=false;
+  document.getElementById('expJsonBtn').disabled=false;
+  document.getElementById('st-spoofed').textContent=parseInt(document.getElementById('st-spoofed').textContent||0)+ok;
+}
+
+function stopSpoof(){ STATE.spoofStop=true; }
+function clearSpoof(){
+  document.getElementById('spoofIds').value='';
+  document.getElementById('spoofResults').innerHTML='';
+  document.getElementById('spoofPbar').style.display='none';
+  document.getElementById('spoofIdCount').textContent='0 ID';
+  document.getElementById('spoofSummary').textContent='Siap';
+  spoofDone=[];
+}
+
+function addSpoofRow(id,status,msg){
+  var list=document.getElementById('spoofResults');
+  if(list.querySelector('[data-placeholder]')){ list.innerHTML=''; }
+  var row=document.createElement('div');
+  row.className='result-row '+status;
+  row.dataset.id=id;
+  row.innerHTML='<div class="result-id">'+id+'</div>'
+    +'<span class="result-status '+status+'">'+msg+'</span>';
+  list.appendChild(row);
+  row.scrollIntoView({behavior:'smooth',block:'nearest'});
+  return row;
+}
+function updateSpoofRow(row,status,val){
+  row.className='result-row '+status;
+  var statusEl=row.querySelector('.result-status');
+  statusEl.className='result-status '+status;
+  if(status==='ok'){
+    statusEl.textContent=val;
+    var copy=document.createElement('button');
+    copy.className='copy-btn';copy.textContent='Salin';
+    copy.onclick=function(){ copyText(val); copy.textContent='✓'; setTimeout(function(){ copy.textContent='Salin'; },1200); };
+    row.appendChild(copy);
+  } else {
+    statusEl.textContent=val.slice(0,60);
+  }
+}
+
+function exportResults(fmt){
+  if(!spoofDone.length) return;
+  var ids=spoofDone.filter(function(r){ return r.assetId; }).map(function(r){ return r.assetId; });
+  var content='';
+  if(fmt==='txt') content=ids.join('\n');
+  else if(fmt==='csv') content='src_id,new_asset_id\n'+spoofDone.map(function(r){ return r.src+','+r.assetId; }).join('\n');
+  else if(fmt==='lua') content='local ids = {\n'+ids.map(function(id){ return '  '+id+','; }).join('\n')+'\n}';
+  else if(fmt==='json') content=JSON.stringify(spoofDone,null,2);
+  var blob=new Blob([content],{type:'text/plain'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='paee_results.'+fmt; a.click();
+}
+
+var audioFileData=null;
+function audioFileSelected(input){
+  var f=input.files[0]; if(!f) return;
+  audioFileData=f;
+  document.getElementById('audioFileName').textContent=f.name+' · '+Math.round(f.size/1024)+'KB';
+  var url=URL.createObjectURL(f);
+  var ap=document.getElementById('audioPreview'); ap.src=url; ap.style.display='';
+  document.getElementById('audioWaveform').textContent='🎵 '+f.name;
+  if(!document.getElementById('audioName').value) document.getElementById('audioName').value=f.name.replace(/\.[^.]+$/,'');
+}
+function updateSpeed(v){ document.getElementById('speedVal').textContent=parseFloat(v).toFixed(2)+'x'; var ap=document.getElementById('audioPreview'); ap.playbackRate=parseFloat(v); }
+function setSpeed(v){ document.getElementById('speedRange').value=v; updateSpeed(v); }
+
+async function uploadAudio(){
+  if(!requireLogin()) return;
+  if(!audioFileData){ alert('Pilih file audio dulu'); return; }
+  var btn=document.getElementById('audioUploadBtn'); btn.disabled=true; btn.textContent='Mengupload...';
+  var fd=new FormData();
+  fd.append('type','audio');
+  fd.append('file',audioFileData);
+  fd.append('apiKey',document.getElementById('audioApiKey').value.trim());
+  fd.append('target',document.getElementById('audioTarget').value);
+  fd.append('ownerId',document.getElementById('audioOwnerId').value.trim());
+  fd.append('name',document.getElementById('audioName').value.trim()||'Audio');
+  try{
+    var r=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+    var d=await r.json();
+    if(d.assetId){
+      showAlert('✓ Upload berhasil! Asset ID: <strong style="font-family:monospace">'+d.assetId+'</strong> <button class="copy-btn" onclick="copyText(\''+d.assetId+'\')">Salin</button>','ok','audioResult');
+      addHistory('audio',audioFileData.name,d.assetId);
+      document.getElementById('st-audio').textContent=parseInt(document.getElementById('st-audio').textContent||0)+1;
+    } else {
+      showAlert('❌ '+( d.error||'Upload gagal'),'err','audioResult');
+    }
+  }catch(e){ showAlert('❌ Error: '+e.message,'err','audioResult'); }
+  btn.disabled=false; btn.innerHTML='<svg width="14" height="14"><use href="#i-upload"/></svg>Upload ke Roblox';
+}
+
+var ytTitleTimer=null;
+function ytUrlInput(){
+  clearTimeout(ytTitleTimer);
+  var v=document.getElementById('ytUrl').value.trim();
+  if(!v){ document.getElementById('ytTitle').textContent=''; return; }
+  ytTitleTimer=setTimeout(async function(){
+    try{
+      var r=await fetch('/api/youtube-title',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'paestudio'},body:JSON.stringify({url:v})});
+      var d=await r.json();
+      if(d.ok) document.getElementById('ytTitle').textContent='🎵 '+d.title;
+    }catch(e){}
+  },600);
+}
+
+async function convertYt(){
+  if(!requireLogin()) return;
+  var url=document.getElementById('ytUrl').value.trim();
+  if(!url){ alert('Masukkan URL YouTube'); return; }
+  var btn=document.getElementById('ytConvertBtn'); btn.disabled=true; btn.textContent='Converting...';
+  document.getElementById('ytResult').innerHTML='<div class="alert alert-info">⏳ Mengconvert... bisa 10-30 detik</div>';
+  try{
+    var r=await fetch('/api/youtube-download',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'paestudio'},body:JSON.stringify({url:url})});
+    if(!r.ok){ var e=await r.json().catch(function(){return{};}); throw new Error(e.message||'Convert gagal'); }
+    var blob=await r.blob();
+    var title=r.headers.get('x-audio-title')||'yt_audio';
+    var fd=new FormData();
+    fd.append('type','audio');
+    fd.append('file',blob,title+'.mp3');
+    fd.append('apiKey',document.getElementById('ytApiKey').value.trim());
+    fd.append('target',document.getElementById('ytTarget').value);
+    fd.append('ownerId',document.getElementById('ytOwnerId').value.trim());
+    fd.append('name',title.slice(0,50));
+    var ur=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+    var ud=await ur.json();
+    if(ud.assetId){
+      showAlert('✓ Berhasil! Asset ID: <strong style="font-family:monospace">'+ud.assetId+'</strong> <button class="copy-btn" onclick="copyText(\''+ud.assetId+'\')">Salin</button>','ok','ytResult');
+      addHistory('yt',title,ud.assetId);
+    } else { throw new Error(ud.error||'Upload gagal'); }
+  }catch(e){ showAlert('❌ '+e.message,'err','ytResult'); }
+  btn.disabled=false; btn.innerHTML='<svg width="14" height="14"><use href="#i-yt"/></svg>Convert & Upload';
+}
+
+async function convertYtOnly(){
+  if(!requireLogin()) return;
+  var url=document.getElementById('ytUrl').value.trim();
+  if(!url){ alert('Masukkan URL YouTube'); return; }
+  var btn=document.getElementById('ytDlBtn'); btn.disabled=true; btn.textContent='Downloading...';
+  try{
+    var r=await fetch('/api/youtube-download',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'paestudio'},body:JSON.stringify({url:url})});
+    if(!r.ok){ var e=await r.json().catch(function(){return{};}); throw new Error(e.message||'Convert gagal'); }
+    var blob=await r.blob();
+    var title=r.headers.get('x-audio-title')||'yt_audio';
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=title+'.mp3'; a.click();
+  }catch(e){ showAlert('❌ '+e.message,'err','ytResult'); }
+  btn.disabled=false; btn.textContent='Download MP3';
+}
+
+async function convertTt(){
+  if(!requireLogin()) return;
+  var url=document.getElementById('ttUrl').value.trim();
+  if(!url){ alert('Masukkan URL TikTok'); return; }
+  var btn=document.getElementById('ttConvertBtn'); btn.disabled=true; btn.textContent='Converting...';
+  document.getElementById('ttResult').innerHTML='<div class="alert alert-info">⏳ Mengconvert TikTok...</div>';
+  try{
+    var r=await fetch('/api/tiktok-download',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'paestudio'},body:JSON.stringify({url:url})});
+    if(!r.ok){ var e=await r.json().catch(function(){return{};}); throw new Error(e.message||'Convert gagal'); }
+    var blob=await r.blob();
+    var title=r.headers.get('x-audio-title')||'tiktok_audio';
+    var fd=new FormData();
+    fd.append('type','audio'); fd.append('file',blob,title+'.mp3');
+    fd.append('apiKey',document.getElementById('ttApiKey').value.trim());
+    fd.append('target',document.getElementById('ttTarget').value);
+    fd.append('ownerId',document.getElementById('ttOwnerId').value.trim());
+    fd.append('name',title.slice(0,50));
+    var ur=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+    var ud=await ur.json();
+    if(ud.assetId){
+      showAlert('✓ Berhasil! Asset ID: <strong style="font-family:monospace">'+ud.assetId+'</strong>','ok','ttResult');
+      addHistory('tt',title,ud.assetId);
+    } else { throw new Error(ud.error||'Upload gagal'); }
+  }catch(e){ showAlert('❌ '+e.message,'err','ttResult'); }
+  btn.disabled=false; btn.innerHTML='<svg width="14" height="14"><use href="#i-tiktok"/></svg>Convert & Upload';
+}
+
+var convertFileData=null;
+function convertFileSelected(input){ var f=input.files[0]; if(!f) return; convertFileData=f; document.getElementById('convertFileName').textContent=f.name; }
+function doConvert(){
+  if(!convertFileData){ alert('Pilih file dulu'); return; }
+  var a=document.createElement('a'); a.href=URL.createObjectURL(convertFileData); a.download=convertFileData.name.replace(/\.[^.]+$/,'')+'.'+document.getElementById('convertFormat').value; a.click();
+  showAlert('✓ File didownload. Upload ke Roblox menggunakan tab "Upload Audio".','ok','convertResult');
+}
+
+var decalFileData=null;
+function decalFileSelected(input){
+  var f=input.files[0]; if(!f) return;
+  decalFileData=f;
+  document.getElementById('decalFileName').textContent=f.name+' · '+Math.round(f.size/1024)+'KB';
+  var preview=document.getElementById('decalPreview');
+  preview.src=URL.createObjectURL(f); preview.style.display='';
+  if(!document.getElementById('decalName').value) document.getElementById('decalName').value=f.name.replace(/\.[^.]+$/,'');
+}
+async function uploadDecal(){
+  if(!requireLogin()) return;
+  if(!decalFileData){ alert('Pilih file gambar dulu'); return; }
+  var fd=new FormData();
+  fd.append('type','decal'); fd.append('file',decalFileData);
+  fd.append('apiKey',document.getElementById('decalApiKey').value.trim());
+  fd.append('target',document.getElementById('decalTarget').value);
+  fd.append('ownerId',document.getElementById('decalOwnerId').value.trim());
+  fd.append('name',document.getElementById('decalName').value.trim()||'Decal');
+  fd.append('description',document.getElementById('decalDesc').value.trim());
+  try{
+    var r=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+    var d=await r.json();
+    if(d.assetId){
+      showAlert('✓ Upload berhasil! Asset ID: <strong style="font-family:monospace">'+d.assetId+'</strong> <button class="copy-btn" onclick="copyText(\''+d.assetId+'\')">Salin</button>','ok','decalResult');
+      addHistory('decal',decalFileData.name,d.assetId);
+    } else { showAlert('❌ '+(d.error||'Upload gagal'),'err','decalResult'); }
+  }catch(e){ showAlert('❌ Error: '+e.message,'err','decalResult'); }
+}
+
+var modelFileData=null;
+function modelFileSelected(input){
+  var f=input.files[0]; if(!f) return;
+  modelFileData=f;
+  document.getElementById('modelFileName').textContent=f.name+' · '+Math.round(f.size/1024)+'KB';
+  if(!document.getElementById('modelName').value) document.getElementById('modelName').value=f.name.replace(/\.[^.]+$/,'');
+}
+async function uploadModel(){
+  if(!requireLogin()) return;
+  if(!modelFileData){ alert('Pilih file model dulu'); return; }
+  var fd=new FormData();
+  fd.append('type','file'); fd.append('file',modelFileData);
+  fd.append('apiKey',document.getElementById('modelApiKey').value.trim());
+  fd.append('target',document.getElementById('modelTarget').value);
+  fd.append('ownerId',document.getElementById('modelOwnerId').value.trim());
+  fd.append('name',document.getElementById('modelName').value.trim()||'Model');
+  try{
+    var r=await fetch('/api/upload',{method:'POST',headers:{'x-requested-with':'paestudio'},body:fd});
+    var d=await r.json();
+    if(d.assetId){
+      showAlert('✓ Upload berhasil! Asset ID: <strong style="font-family:monospace">'+d.assetId+'</strong> <button class="copy-btn" onclick="copyText(\''+d.assetId+'\')">Salin</button>','ok','modelResult');
+      addHistory('model',modelFileData.name,d.assetId);
+    } else { showAlert('❌ '+(d.error||'Upload gagal'),'err','modelResult'); }
+  }catch(e){ showAlert('❌ Error: '+e.message,'err','modelResult'); }
+}
+
+function openBuy(days){
+  var prices={30:'60.000',365:'499.000'};
+  openModal('<div class="modal-title">👑 Beli VIP '+days+' Hari</div>'
+    +'<div class="alert alert-info" style="margin-bottom:20px">Harga: <strong>Rp '+prices[days]+'</strong></div>'
+    +'<p style="font-size:14px;color:var(--text-muted);line-height:1.7">Hubungi owner untuk proses pembayaran dan aktivasi:'
+    +'<br><br>📱 <a href="https://wa.me/6287729035761" style="color:var(--accent-success); font-weight:700">WhatsApp: 087729035761</a>'
+    +'<br>💬 Kirim pesan: <code style="font-size:12px;background:rgba(255,255,255,0.05);padding:4px 8px;border-radius:6px;margin-top:8px;display:inline-block">VIP '+days+' hari - '+(STATE.user?STATE.user.name:'...')+'</code></p>'
+    +'<br><button class="btn btn-ghost" onclick="closeModal()" style="width:100%;justify-content:center;margin-top:12px">Tutup</button>');
+}
+
+(function(){
+  var zones=[
+    {zone:'importDrop',input:'importFile',cb:'importFile'},
+    {zone:'audioFile',input:'audioFile',cb:'audioFileSelected'},
+    {zone:'decalFile',input:'decalFile',cb:'decalFileSelected'},
+    {zone:'modelFile',input:'modelFile',cb:'modelFileSelected'},
+  ];
+  zones.forEach(function(z){
+    var el=document.getElementById(z.zone);
+    if(!el||!el.classList.contains('drop-zone')) return;
+    el.addEventListener('dragover',function(e){ e.preventDefault(); el.classList.add('drag'); });
+    el.addEventListener('dragleave',function(){ el.classList.remove('drag'); });
+    el.addEventListener('drop',function(e){
+      e.preventDefault(); el.classList.remove('drag');
+      var f=e.dataTransfer.files[0]; if(!f) return;
+      var inp=document.getElementById(z.input); if(!inp) return;
+      var dt=new DataTransfer(); dt.items.add(f); inp.files=dt.files;
+      window[z.cb](inp);
+    });
+  });
+})();
+
+(function(){
+  var total=STATE.history.length;
+  var today=STATE.history.filter(function(h){ return Date.now()-h.ts<86400000; }).length;
+  var spoofed=STATE.history.filter(function(h){ return h.type==='spoof'||h.type==='audio'; }).length;
+  document.getElementById('st-spoofed').textContent=spoofed;
+  document.getElementById('st-audio').textContent=STATE.history.filter(function(h){ return h.type==='audio'||h.type==='yt'||h.type==='tt'; }).length;
+  document.getElementById('st-today').textContent=today;
+})();
+</script>
+</body>
+</html>
